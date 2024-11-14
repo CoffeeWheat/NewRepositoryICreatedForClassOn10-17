@@ -1,0 +1,30 @@
+#版本
+version: '3'
+
+#定義服務
+services:
+  #服務名字可以隨便取
+  app:
+    build: 
+      context:  .
+    ports:
+      #container port : host port
+      - "80:80"
+    volumes:
+      - ./app:/code/app
+    depends_on:
+      #db啟動後才能啟動app
+      - db
+
+  db:
+    #抓現成的image，14版的postgres
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    volumes:
+      #postgres_data是別名
+      - postgres_data:/var/lid/postgresql/data
+
+volumes:
+  #設定postgres_data別名的真正資料
+  postgres_data:
