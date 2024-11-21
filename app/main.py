@@ -22,7 +22,7 @@ class Todo(Base):
     description=Colume(String, nullable=True)
     complete=Colume(Boolean, default=False)
 
-# Initialize Database's Table
+# Initialize Database's Table 建立資料庫
 Base.metedata.create_all(bind=engine)
 
 
@@ -33,16 +33,18 @@ class TodoBase(BaseModel):
     description:str | None=None #None=None 代表可以填空白值
     complete: bool=False
 
+#建立的格式
 class TodoCreate(TodoBase):
     pass
 
+#回傳的格式
 class TodoResponse(TodoBase):
     id:int
 
     class Config:
         orm_mode=True
 
-#database injection 保持與DB的連線
+#database injection 讓API保持與DB的連線
 def get_db():
     db=SessionLocal()
     try:
@@ -52,12 +54,11 @@ def get_db():
 
 
 #api devoloping
-
 @app.post("/todos", response_model=TodoResponse)
 def create_todo(todo: TodoCreate, db: Session=Depends(get_db())):
     db_todo=Todo(**todo.dict()) #建立物件
-    db.add(db_todo)
-    db.commit() #寫入資料庫
+    db.add(db_todo) #寫入資料庫
+    db.commit() #真正寫入資料庫
     db.refresh(db.todo) #更新資料庫
     return db_todo #回傳結果
 
@@ -74,6 +75,7 @@ def read_todo(todo_id: int, db: Session=Depends(get_db())):
         raise HTTPException(status_code=404, details="Todo not found")
     return db_todo
 
+#更新
 @app.put("/todo/{todo_id}", response_model=TodoResponse)
 def update_todo(todo_id: int, todo: TodoCreate, db: Session=Depends(get_db())):
     db_todo=db.query(Todo).filter(Todo.id == todo_id).first()
@@ -85,6 +87,7 @@ def update_todo(todo_id: int, todo: TodoCreate, db: Session=Depends(get_db())):
     db.refresh(db_todo)
     return db_todo
 
+#刪除
 @app.delete("/todo/{todo_id}")
 def delete_todo(todo_id: int, db: Session=Depends(get_db())):
     db_todo=db.query(Todo).filter(Todo.id == todo_id).first()
