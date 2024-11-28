@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Colume, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base #建立資料庫的工具
 from sqlalchemy.orm import sessionmaker, Session #把模型變成object
 
@@ -17,13 +17,13 @@ SessionLocal=sessionmaker(autocommit=False, autoflush=False, bind=engine)
 #從Base繼承基本模型
 class Todo(Base):
     __tablename__="todos"
-    id=Colume(Integer, primary_key=True, index=True)
-    title=Colume(String, nullable=False)
-    description=Colume(String, nullable=True)
-    complete=Colume(Boolean, default=False)
+    id=Column(Integer, primary_key=True, index=True)
+    title=Column(String, nullable=False)
+    description=Column(String, nullable=True)
+    complete=Column(Boolean, default=False)
 
 # Initialize Database's Table 建立資料庫
-Base.metedata.create_all(bind=engine)
+Base.metadata.create_all(bind=engine)
 
 
 
@@ -42,7 +42,7 @@ class TodoResponse(TodoBase):
     id:int
 
     class Config:
-        orm_mode=True
+        from_attributes=True
 
 #database injection 讓API保持與DB的連線
 def get_db():
@@ -55,21 +55,21 @@ def get_db():
 
 #api devoloping
 @app.post("/todos", response_model=TodoResponse)
-def create_todo(todo: TodoCreate, db: Session=Depends(get_db())):
+def create_todo(todo: TodoCreate, db: Session=Depends(get_db)):
     db_todo=Todo(**todo.dict()) #建立物件
     db.add(db_todo) #寫入資料庫
     db.commit() #真正寫入資料庫
-    db.refresh(db.todo) #更新資料庫
+    db.refresh(db_todo) #更新資料庫
     return db_todo #回傳結果
 
 #取得多個資料 用List
 @app.get("/todos", response_model=list[TodoResponse])
-def read_todos(db: Session=Depends(get_db())):
+def read_todos(db: Session=Depends(get_db)):
     return db.query(Todo).all()
 
 #取得單個資料 用todo_id判斷
 @app.get("/todo/{todo_id}", response_model=TodoResponse)
-def read_todo(todo_id: int, db: Session=Depends(get_db())):
+def read_todo(todo_id: int, db: Session=Depends(get_db)):
     db_todo=db.query(Todo).filter(Todo.id == todo_id).first()
     if not db_todo:
         raise HTTPException(status_code=404, details="Todo not found")
@@ -77,7 +77,7 @@ def read_todo(todo_id: int, db: Session=Depends(get_db())):
 
 #更新
 @app.put("/todo/{todo_id}", response_model=TodoResponse)
-def update_todo(todo_id: int, todo: TodoCreate, db: Session=Depends(get_db())):
+def update_todo(todo_id: int, todo: TodoCreate, db: Session=Depends(get_db)):
     db_todo=db.query(Todo).filter(Todo.id == todo_id).first()
     if not db_todo:
         raise HTTPException(status_code=404, details="Todo not found")
@@ -89,7 +89,7 @@ def update_todo(todo_id: int, todo: TodoCreate, db: Session=Depends(get_db())):
 
 #刪除
 @app.delete("/todo/{todo_id}")
-def delete_todo(todo_id: int, db: Session=Depends(get_db())):
+def delete_todo(todo_id: int, db: Session=Depends(get_db)):
     db_todo=db.query(Todo).filter(Todo.id == todo_id).first()
     if not db_todo:
         raise HTTPException(status_code=404, details="Todo not found")
