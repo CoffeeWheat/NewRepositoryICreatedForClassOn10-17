@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Depends, HTTPException
 from pydantic import BaseModel
-from sqlalchemy import create_engine, Column, Integer, String, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Date # !一定要import要使用的資料型態
 from sqlalchemy.ext.declarative import declarative_base #建立資料庫的工具
 from sqlalchemy.orm import sessionmaker, Session #把模型變成object
 
@@ -17,10 +17,15 @@ SessionLocal=sessionmaker(autocommit=False, autoflush=False, bind=engine)
 #從Base繼承基本模型
 class Todo(Base):
     __tablename__="todos"
+
+    # column名稱=Column(資料型態, 其他參數)
     id=Column(Integer, primary_key=True, index=True)
-    title=Column(String, nullable=False)
+    title=Column(String(100), nullable=False) # String(100) 限制字元數量
     description=Column(String, nullable=True)
     complete=Column(Boolean, default=False)
+    # below is added on 12-5
+    due_date=Column(Date, nullable=True)
+
 
 # Initialize Database's Table 建立資料庫
 Base.metadata.create_all(bind=engine)
