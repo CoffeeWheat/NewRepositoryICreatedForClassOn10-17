@@ -14,3 +14,13 @@ class Todo(Base):
     complete=Column(Boolean, default=False)
     # below is added on 12-5
     due_date=Column(Date, nullable=True)
+
+
+
+class User(Base):
+    __tablename__="users"
+
+    id=Column()
+    username=Column()
+    password=Column()
+    email=Column()
