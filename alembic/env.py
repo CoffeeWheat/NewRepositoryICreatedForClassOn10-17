@@ -5,13 +5,18 @@ from sqlalchemy import pool
 
 # !24-12-5 暫時性的方法
 # !為了讓 app.main 能被找到 要加入上面三行
-import sys
-from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[1]))
-from app.main import Base
+
+#import sys
+#from pathlib import Path
+#sys.path.append(str(Path(__file__).resolve().parents[1]))
+#from app.main import Base
 
 
 from alembic import context
+
+from app.database import Base
+from app.models import Todo
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
