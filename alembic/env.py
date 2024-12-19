@@ -3,6 +3,8 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
+from app.models import Todo, User
+
 # !24-12-5 暫時性的方法
 # !為了讓 app.main 能被找到 要加入上面三行
 
