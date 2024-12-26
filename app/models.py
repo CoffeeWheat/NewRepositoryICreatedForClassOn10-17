@@ -14,7 +14,7 @@ class Todo(Base):
     complete=Column(Boolean, default=False)
     # below is added on 12-5
     due_date=Column(Date, nullable=True)
-    priority=Column(Boolean, nullable=False)
+    priority=Column(Integer, nullable=False)
 
 
 class User(Base):
@@ -24,4 +24,3 @@ class User(Base):
     username=Column(String, nullable=False)
     password=Column(String, nullable=False)
     email=Column(String, unique=True, nullable=False)
-    field=Column(String, nullable=False)
