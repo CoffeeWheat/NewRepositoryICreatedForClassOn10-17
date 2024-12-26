@@ -17,6 +17,7 @@ class Todo(Base):
     priority=Column(Integer, nullable=False)
 
 
+
 class User(Base):
     __tablename__="users"
 
