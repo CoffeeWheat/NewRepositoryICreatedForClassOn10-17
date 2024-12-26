@@ -14,7 +14,8 @@ class Todo(Base):
     complete=Column(Boolean, default=False)
     # below is added on 12-5
     due_date=Column(Date, nullable=True)
-    priority=Column(String, nullable=False)
+    priority=Column(Integer, nullable=False)
+
 
 
 class User(Base):
