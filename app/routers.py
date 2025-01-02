@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session #把模型變成object
 from .schemas import TodoCreate, TodoResponse
 from .models import Todo
 from .database import SessionLocal
+from .auth import getCurrentUser
 
 
 router = APIRouter()
@@ -21,9 +22,12 @@ def get_db():
 
 #api devoloping
 @router.post("/todos", response_model=TodoResponse)
-def create_todo(todo: TodoCreate, db: Session=Depends(get_db)):
+def create_todo(
+        todo: TodoCreate,
+        db: Session=Depends(get_db),
+        current_user: dict = Depends(getCurrentUser)):
     db_todo=Todo(**todo.dict()) #建立物件
-    db.add(db_todo) #寫入資料庫
+    db.add(db_todo, ) #寫入資料庫
     db.commit() #真正寫入資料庫
     db.refresh(db_todo) #更新資料庫
     return db_todo #回傳結果

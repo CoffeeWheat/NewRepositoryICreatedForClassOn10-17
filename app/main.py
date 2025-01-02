@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from .database import Base, engine
 from .routers import router
+from .auth import router as authRouter
 
 app=FastAPI() #init fastAPI
 
@@ -9,3 +10,4 @@ app=FastAPI() #init fastAPI
 
 #! 註冊router
 app.include_router(router=router, prefix="/api", tags=["todos"])
+app.include_router(authRouter)
